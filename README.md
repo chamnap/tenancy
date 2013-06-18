@@ -2,12 +2,15 @@
 
 `tenancy` is a simple gem that provides multi-tenancy support on activerecord through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
 
-
 ## Installation
 
 Add this line to your application's Gemfile:
 
     gem 'tenancy', git: 'git@github.com/yoolk/tenancy.git'
+
+And then execute:
+
+    $ bundle
 
 ## Usage
 
@@ -77,3 +80,24 @@ This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
 4. it adds `has_many :listings` inside `Portal`.
 
 `validates :value, uniqueness: true` will validates uniqueness against the whole table. `validates_uniqueness_in_scope` validates uniqueness with the scopes you passed in `scope_to`.
+
+## Rails
+
+Because `#current` is using thread variable, it's advisable to set to `nil` after processing controller action. This can be easily achievable by using `around_filter` and `#with` inside `application_controller.rb`. Or, you can do it manually by using `#current=`.
+
+    class ApplicationController < ActionController::Base
+      around_filter :route_domain
+
+      protected
+      def route_domain(&block)
+        Portal.with(current_portal, &block)
+      end
+
+      def current_portal
+        @current_portal ||= Portal.find_by_domain_name(request.host)
+      end
+    end
+
+## Authors
+
+* [Chamnap Chhorn](https://github.com/chamnap)
