@@ -63,11 +63,11 @@ This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
 
     >> Portal.current = 1
     >> Listing.find(1).to_sql
-    => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1
+    => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1 AND "id" = 1
 
     >> Listing.current = 1
     >> Communication.find(1).to_sql
-    => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 and "listing_id" = 1
+    => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "id" = 1
 
 `scope_to :portal` does four things:
 
