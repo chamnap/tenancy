@@ -98,6 +98,12 @@ Because `#current` is using thread variable, it's advisable to set to `nil` afte
       end
     end
 
+## Indexes
+
+    add_index :listings, :portal_id
+    add_index :communications, [:portal_id, :listing_id]
+
+
 ## Authors
 
 * [Chamnap Chhorn](https://github.com/chamnap)
