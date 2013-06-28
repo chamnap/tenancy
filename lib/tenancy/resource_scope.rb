@@ -32,7 +32,7 @@ module Tenancy
           # so that it doesn't touch db
           define_method(resource) do |reload=false|
             return super(reload) if reload
-            # return resource_class.current if send(resource_foreign_key) == resource_class.current_id
+            return resource_class.current if send(resource_foreign_key) == resource_class.current_id
             super(reload)
           end
         end

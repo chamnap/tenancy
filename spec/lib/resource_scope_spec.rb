@@ -71,24 +71,24 @@ describe "Tenancy::ResourceScope" do
 
     it "reload belongs_to when passes true" do
       listing.portal.domain_name = 'abc.com'
-      listing.portal(true).domain_name.should == 'yp.com.kh'
+      listing.portal(true).object_id.should_not == Portal.current.object_id
     end
 
     it "doesn't reload belongs_to" do
       listing.portal.domain_name = 'abc.com'
-      listing.portal.domain_name.should == 'abc.com'
+      listing.portal.object_id.should == Portal.current.object_id
     end
 
     it "returns different object" do
       listing.portal_id = panpages.id
-      listing.portal.domain_name.should == panpages.domain_name
+      listing.portal.object_id.should_not == Portal.current.object_id
     end
 
     it "doesn't touch db" do
       current_listing = listing
 
       Portal.establish_connection(adapter: "sqlite3", database: "spec/invalid.sqlite3")
-      current_listing.portal.should == Portal.current
+      current_listing.portal.object_id.should == Portal.current.object_id
 
       Portal.establish_connection(ActiveRecord::Base.connection_config)
     end
