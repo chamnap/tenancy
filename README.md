@@ -61,6 +61,15 @@ This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
       validates_uniqueness_in_scope :value
     end
 
+    class ExtraCommunication < ActiveRecord::Base
+      include Tenancy::ResourceScope
+      
+      # options here will send to #belongs_to
+      scope_to :portal, class_name: 'Portal'
+      scope_to :listing, class_name: 'Listing'
+      validates_uniqueness_in_scope :value
+    end
+
     >> Portal.current = 1
     >> Listing.find(1).to_sql
     => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1 AND "id" = 1
