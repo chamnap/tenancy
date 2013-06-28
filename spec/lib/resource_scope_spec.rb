@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe "Tenancy::ResourceScope" do
   let(:camyp) { Portal.create(domain_name: 'yp.com.kh') }
-  let(:listing1) { Listing.create(name: 'Listing 1', portal_id: camyp.id) }
+  let(:panpages) { Portal.create(domain_name: 'panpages.com') }
+  let(:listing) { Listing.create(name: 'Listing 1', portal_id: camyp.id) }
 
   after(:all) do
     Portal.delete_all
@@ -41,7 +42,7 @@ describe "Tenancy::ResourceScope" do
 
     it "have default_scope with :portal_id field" do
       Portal.current  = camyp
-      Listing.current = listing1
+      Listing.current = listing
 
       Communication.scoped.to_sql.should == Communication.where(portal_id: Portal.current_id, listing_id: Listing.current_id).to_sql
     end
@@ -61,6 +62,35 @@ describe "Tenancy::ResourceScope" do
 
     it "raise exception when passing two resources and options" do
       expect { ExtraCommunication.scope_to(:portal, :listing, class_name: 'Listing') }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe "belongs_to method override" do
+    before(:each) { Portal.current = camyp }
+    after(:each)  { Portal.current = nil }
+
+    it "reload belongs_to when passes true" do
+      listing.portal.domain_name = 'abc.com'
+      listing.portal(true).domain_name.should == 'yp.com.kh'
+    end
+
+    it "doesn't reload belongs_to" do
+      listing.portal.domain_name = 'abc.com'
+      listing.portal.domain_name.should == 'abc.com'
+    end
+
+    it "returns different object" do
+      listing.portal_id = panpages.id
+      listing.portal.domain_name.should == panpages.domain_name
+    end
+
+    it "doesn't touch db" do
+      current_listing = listing
+
+      Portal.establish_connection(adapter: "sqlite3", database: "spec/invalid.sqlite3")
+      current_listing.portal.should == Portal.current
+
+      Portal.establish_connection(ActiveRecord::Base.connection_config)
     end
   end
 end

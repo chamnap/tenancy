@@ -17,11 +17,11 @@ module Tenancy
           find(value)
         end
 
-        Thread.current[:"current_#{name.downcase}"] = tenant
+        Thread.current["#{name}.current"] = tenant
       end
 
       def current
-        Thread.current[:"current_#{name.downcase}"]
+        Thread.current["#{name}.current"]
       end
 
       def with(tenant, &block)

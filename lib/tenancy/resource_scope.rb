@@ -24,9 +24,17 @@ module Tenancy
           belongs_to        resource, options
 
           # default_scope
-          foreign_key       = reflect_on_association(resource).foreign_key
-          scope_fields     << foreign_key
-          default_scope     { where(:"#{foreign_key}" => resource_class.current_id) if resource_class.current_id }
+          resource_foreign_key = reflect_on_association(resource).foreign_key
+          scope_fields     << resource_foreign_key
+          default_scope     { where(:"#{resource_foreign_key}" => resource_class.current_id) if resource_class.current_id }
+
+          # override to return current resource instance
+          # so that it doesn't touch db
+          define_method(resource) do |reload=false|
+            return super(reload) if reload
+            # return resource_class.current if send(resource_foreign_key) == resource_class.current_id
+            super(reload)
+          end
         end
       end
 

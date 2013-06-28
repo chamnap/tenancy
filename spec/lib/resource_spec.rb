@@ -11,20 +11,20 @@ describe "Tenancy::Resource" do
     Portal.delete_all
   end
 
-  before(:each) { Thread.current[:current_portal] = nil }
+  before(:each) { Thread.current['Portal.current'] = nil }
 
   it "set current with instance" do
     Portal.current = @camyp
 
     Portal.current.should == @camyp
-    Thread.current[:current_portal].should == @camyp
+    Thread.current['Portal.current'].should == @camyp
   end
 
   it "set current with id" do
     Portal.current = @panpage.id
 
     Portal.current.should == @panpage
-    Thread.current[:current_portal].should == @panpage
+    Thread.current['Portal.current'].should == @panpage
   end
 
   it "set current with nil" do
@@ -32,7 +32,7 @@ describe "Tenancy::Resource" do
     Portal.current = nil
 
     Portal.current.should == nil
-    Thread.current[:current_portal].should == nil
+    Thread.current['Portal.current'].should == nil
   end
 
   it "#current_id" do
