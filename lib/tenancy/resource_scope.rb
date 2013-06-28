@@ -5,24 +5,28 @@ module Tenancy
     module ClassMethods
       attr_reader :scope_fields
 
+      def scope_fields
+        @scope_fields ||= []
+      end
+
       def scope_to(*resources)
-        @scope_fields    = []
+        options = resources.extract_options!.dup
+        raise ArgumentError, 'options should be blank if there are multiple resources' if resources.count > 1 and options.present?
+        
         resources.each do |resource|
           resource          = resource.to_sym
-          resource_class    = resource.to_s.classify.constantize
+          options[:class_name] ||= resource.to_s.classify
+          resource_class    = options[:class_name].constantize
           association_name  = self.to_s.downcase.pluralize.to_sym
           
           # validates and belongs_to
-          validates         resource, presence:   true
-          belongs_to        resource, class_name: resource_class
+          validates         resource, presence: true
+          belongs_to        resource, options
 
           # default_scope
           foreign_key       = reflect_on_association(resource).foreign_key
-          @scope_fields     << foreign_key
+          scope_fields     << foreign_key
           default_scope     { where(:"#{foreign_key}" => resource_class.current_id) if resource_class.current_id }
-
-          # has_many
-          resource_class.has_many association_name, class_name: self.to_s
         end
       end
 

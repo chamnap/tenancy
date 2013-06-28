@@ -25,4 +25,12 @@ ActiveRecord::Schema.define do
     t.references :portal
     t.timestamps
   end
+
+  create_table :extra_communications, :force => true do |t|
+    t.string :label
+    t.string :value
+    t.references :listing
+    t.references :portal
+    t.timestamps
+  end
 end

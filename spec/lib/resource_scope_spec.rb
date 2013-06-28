@@ -8,11 +8,6 @@ describe "Tenancy::ResourceScope" do
     Portal.delete_all
   end
 
-  describe Portal do
-    it { should have_many(:listings) }
-    it { should have_many(:communications) }
-  end
-
   describe Listing do
     it { should belong_to(:portal) }
     
@@ -31,8 +26,6 @@ describe "Tenancy::ResourceScope" do
 
       Listing.scoped.to_sql.should == "SELECT \"listings\".* FROM \"listings\" "
     end
-
-    it { should have_many(:communications) }
   end
 
   describe Communication do
@@ -58,6 +51,16 @@ describe "Tenancy::ResourceScope" do
       Listing.current = nil
 
       Communication.scoped.to_sql.should == "SELECT \"communications\".* FROM \"communications\" "
+    end
+  end
+
+  describe ExtraCommunication do
+    it { should belong_to(:portal) }
+
+    it { should belong_to(:listing) }
+
+    it "raise exception when passing two resources and options" do
+      expect { ExtraCommunication.scope_to(:portal, :listing, class_name: 'Listing') }.to raise_error(ArgumentError)
     end
   end
 end

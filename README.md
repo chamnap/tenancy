@@ -69,15 +69,13 @@ This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
     >> Communication.find(1).to_sql
     => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "id" = 1
 
-`scope_to :portal` does four things:
+`scope_to :portal` does three things:
 
 1. it adds `belongs_to :portal`.
 
 2. it adds `validates :portal, presence: true`.
 
 3. it adds `default_scope { where(portal_id: Portal.current) if Portal.current }`.
-
-4. it adds `has_many :listings` inside `Portal`.
 
 `validates :value, uniqueness: true` will validates uniqueness against the whole table. `validates_uniqueness_in_scope` validates uniqueness with the scopes you passed in `scope_to`.
 
