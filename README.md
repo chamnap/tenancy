@@ -6,11 +6,15 @@
 
 Add this line to your application's Gemfile:
 
-    gem 'tenancy', git: 'git@github.com/yoolk/tenancy.git'
+```ruby
+gem 'tenancy', git: 'git@github.com/yoolk/tenancy.git'
+```
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 ## Usage
 
@@ -20,63 +24,67 @@ This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
 
 `Tenancy::Resource` is a module which you want others to be scoped by.
 
-    class Portal < ActiveRecord::Base
-      include Tenancy::Resource
-    end
+```ruby
+class Portal < ActiveRecord::Base
+  include Tenancy::Resource
+end
 
-    >> camyp = Portal.where(domain_name: 'yp.com.kh').first
-    => #<Portal id: 1, domain_name: 'yp.com.kh'>
+camyp = Portal.where(domain_name: 'yp.com.kh').first
+# => <Portal id: 1, domain_name: 'yp.com.kh'>
 
-    # set current portal by id
-    >> Portal.current = camyp
+# set current portal by id
+Portal.current = camyp
 
-    # or portal object
-    >> Portal.current = 1
+# or portal object
+Portal.current = 1
 
-    # get current portal
-    >> Portal.current
-    => #<Portal id: 1, domain_name: 'yp.com.kh'>
+# get current portal
+Portal.current
+# => <Portal id: 1, domain_name: 'yp.com.kh'>
 
-    # scope with this portal
-    Portal.with(camyp) do
-      # Do something here with this portal
-    end
+# scope with this portal
+Portal.with(camyp) do
+  # Do something here with this portal
+end
+```
 
 ### Tenancy::ResourceScope
 
 `Tenancy::ResourceScope` is a module which you want to scope itself to `Tenancy::Resource`.
 
-    class Listing < ActiveRecord::Base
-      include Tenancy::Resource
-      include Tenancy::ResourceScope
+```ruby
+class Listing < ActiveRecord::Base
+  include Tenancy::Resource
+  include Tenancy::ResourceScope
 
-      scope_to :portal
-      validates_uniqueness_in_scope :name, case_sensitive: false
-    end
+  scope_to :portal
+  validates_uniqueness_in_scope :name, case_sensitive: false
+end
 
-    class Communication < ActiveRecord::Base
-      include Tenancy::ResourceScope
-      
-      scope_to :portal, :listing
-      validates_uniqueness_in_scope :value
-    end
+class Communication < ActiveRecord::Base
+  include Tenancy::ResourceScope
+  
+  scope_to :portal, :listing
+  validates_uniqueness_in_scope :value
+end
 
-    class ExtraCommunication < ActiveRecord::Base
-      include Tenancy::ResourceScope
-      
-      # options here will send to #belongs_to
-      scope_to :portal, class_name: 'Portal'
-      scope_to :listing, class_name: 'Listing'
-      validates_uniqueness_in_scope :value
-    end
+class ExtraCommunication < ActiveRecord::Base
+  include Tenancy::ResourceScope
+  
+  # options here will send to #belongs_to
+  scope_to :portal, class_name: 'Portal'
+  scope_to :listing, class_name: 'Listing'
+  validates_uniqueness_in_scope :value
+end
 
-    >> Portal.current = 1
-    >> Listing.find(1).to_sql
-    => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1 AND "id" = 1
+Portal.current = 1
+Listing.find(1).to_sql
+# => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1 AND "id" = 1
 
-    >> Listing.current = 1
-    >> Communication.find(1).to_sql
-    => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "id" = 1
+Listing.current = 1
+Communication.find(1).to_sql
+# => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "id" = 1
+```
 
 `scope_to :portal` does 4 things:
 
@@ -94,23 +102,27 @@ This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
 
 Because `#current` is using thread variable, it's advisable to set to `nil` after processing controller action. This can be easily achievable by using `around_filter` and `#with` inside `application_controller.rb`. Or, you can do it manually by using `#current=`.
 
-    class ApplicationController < ActionController::Base
-      around_filter :route_domain
+```ruby
+class ApplicationController < ActionController::Base
+  around_filter :route_domain
 
-      protected
-      def route_domain(&block)
-        Portal.with(current_portal, &block)
-      end
+  protected
+  def route_domain(&block)
+    Portal.with(current_portal, &block)
+  end
 
-      def current_portal
-        @current_portal ||= Portal.find_by_domain_name(request.host)
-      end
-    end
+  def current_portal
+    @current_portal ||= Portal.find_by_domain_name(request.host)
+  end
+end
+```
 
 ## Indexes
 
-    add_index :listings, :portal_id
-    add_index :communications, [:portal_id, :listing_id]
+```ruby
+add_index :listings, :portal_id
+add_index :communications, [:portal_id, :listing_id]
+```
 
 
 ## Authors
