@@ -63,6 +63,17 @@ describe "Tenancy::ResourceScope" do
     it "raise exception when passing two resources and options" do
       expect { ExtraCommunication.scope_to(:portal, :listing, class_name: 'Listing') }.to raise_error(ArgumentError)
     end
+
+    it "uses the correct scope" do
+      listing2 = Listing.create(name: 'Name 2', portal: camyp)
+
+      Portal.current = camyp
+      Listing.current = listing2
+      
+      extra_communication = ExtraCommunication.new
+      extra_communication.listing_id.should == listing2.id
+      extra_communication.portal_id.should  == camyp.id
+    end
   end
 
   describe "belongs_to method override" do

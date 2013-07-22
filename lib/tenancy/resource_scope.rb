@@ -14,10 +14,10 @@ module Tenancy
         raise ArgumentError, 'options should be blank if there are multiple resources' if resources.count > 1 and options.present?
         
         resources.each do |resource|
-          resource          = resource.to_sym
-          options[:class_name] ||= resource.to_s.classify
-          resource_class    = options[:class_name].constantize
-          association_name  = self.to_s.downcase.pluralize.to_sym
+          resource         = resource.to_sym
+          resource_class_name ||= (options[:class_name].presence || resource.to_s).classify
+          resource_class   = resource_class_name.constantize
+          association_name = self.to_s.downcase.pluralize.to_sym
           
           # validates and belongs_to
           validates         resource, presence: true
