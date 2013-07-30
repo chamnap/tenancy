@@ -3,9 +3,6 @@ module Tenancy
     extend ActiveSupport::Concern
 
     module ClassMethods
-      delegate :id, to: :current,
-                    prefix: true,
-                    allow_nil: true
 
       def current=(value)
         tenant = case value
@@ -22,6 +19,10 @@ module Tenancy
 
       def current
         Thread.current["#{name}.current"]
+      end
+
+      def current_id
+        current.try(:id)
       end
 
       def with(tenant, &block)
