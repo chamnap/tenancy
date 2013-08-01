@@ -124,6 +124,22 @@ add_index :listings, :portal_id
 add_index :communications, [:portal_id, :listing_id]
 ```
 
+## RSpec
+
+In spec_helper.rb, you'll need to require the matchers:
+
+```ruby
+require "tenancy/matchers"
+```
+
+Example:
+
+```ruby
+describe Listing do
+  it { should have_scope_to(:portal) }
+  it { should have_scope_to(:portal).class_name('Portal') }
+end
+```
 
 ## Authors
 
