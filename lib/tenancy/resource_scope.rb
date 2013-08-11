@@ -15,7 +15,7 @@ module Tenancy
         
         resources.each do |resource|
           resource         = resource.to_sym
-          resource_class_name ||= (options[:class_name].presence || resource.to_s).classify
+          resource_class_name ||= (options[:class_name].to_s.presence || resource.to_s).classify
           resource_class   = resource_class_name.constantize
           association_name = self.to_s.downcase.pluralize.to_sym
           
