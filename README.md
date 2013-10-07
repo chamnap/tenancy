@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'tenancy', git: 'git@github.com/yoolk/tenancy.git'
+gem 'tenancy', git: 'git@github.com:yoolk/tenancy.git'
 ```
 
 And then execute:
@@ -18,7 +18,7 @@ $ bundle
 
 ## Usage
 
-This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`. 
+This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
 
 ### Tenancy::Resource
 
@@ -63,14 +63,14 @@ end
 
 class Communication < ActiveRecord::Base
   include Tenancy::ResourceScope
-  
+
   scope_to :portal, :listing
   validates_uniqueness_in_scope :value
 end
 
 class ExtraCommunication < ActiveRecord::Base
   include Tenancy::ResourceScope
-  
+
   # options here will send to #belongs_to
   scope_to :portal, class_name: 'Portal'
   scope_to :listing, class_name: 'Listing'
