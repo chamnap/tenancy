@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'tenancy', git: 'git@github.com:yoolk/tenancy.git'
+gem 'tenancy'
 ```
 
 And then execute:
