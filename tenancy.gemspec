@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["chamnapchhorn@gmail.com"]
   spec.description   = %q{A simple multi-tenancy with activerecord through scoping}
   spec.summary       = %q{A simple multi-tenancy with activerecord through scoping}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/yoolk/tenancy"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
