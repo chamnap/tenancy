@@ -7,6 +7,10 @@ module Tenancy
         HaveScopeToMatcher.new(name)
       end
 
+      def be_a_tenant
+        BeATenant.new
+      end
+
       class HaveScopeToMatcher
         def initialize(scope_name)
           @scope_name        = scope_name
@@ -50,6 +54,23 @@ module Tenancy
               super
             end
           end
+      end
+
+      class BeATenant
+        attr_accessor :klass
+
+        def matches?(instance)
+          self.klass = instance.class
+          klass.included_modules.include? Tenancy::Resource
+        end
+
+        def failure_message
+          "Expected to call `include Tenancy::Resource` inside #{klass}"
+        end
+
+        def description
+          "require to call `include Tenancy::Resource`"
+        end
       end
     end
   end

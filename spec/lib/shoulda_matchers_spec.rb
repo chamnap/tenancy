@@ -1,6 +1,14 @@
 require 'spec_helper'
 require 'tenancy/matchers'
 
+describe Portal do
+  it { should be_a_tenant }
+end
+
+describe Listing do
+  it { should be_a_tenant }
+end
+
 describe ExtraCommunication do
   let(:camyp) { Portal.create(domain_name: 'yp.com.kh') }
   before      { Portal.current = camyp }
