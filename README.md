@@ -135,6 +135,12 @@ require "tenancy/matchers"
 Example:
 
 ```ruby
+describe Portal do
+  it { should be_a_tenant }
+end
+```
+
+```ruby
 describe Listing do
   it { should have_scope_to(:portal) }
   it { should have_scope_to(:portal).class_name('Portal') }
