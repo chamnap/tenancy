@@ -117,6 +117,8 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+From version 0.2.0 up, you don't need to use `around_filter` because this gem add [request_store](https://github.com/steveklabnik/request_store) as dependency. It will clear threaded variables inside middleware on every request.
+
 ## Indexes
 
 ```ruby

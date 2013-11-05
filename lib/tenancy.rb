@@ -1,5 +1,6 @@
 require "tenancy/version"
 require "active_support/concern"
+require "request_store"
 
 module Tenancy
   autoload :Resource,      'tenancy/resource'

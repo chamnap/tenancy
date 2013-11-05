@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
 
   spec.add_dependency "activerecord", ">= 3.2.13"
+  spec.add_dependency "request_store", "~> 1.0.5"
 end

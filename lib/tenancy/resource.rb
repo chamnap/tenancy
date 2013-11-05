@@ -14,11 +14,11 @@ module Tenancy
           find(value)
         end
 
-        Thread.current["#{name}.current"] = tenant
+        RequestStore.store[:"#{name}.current"] = tenant
       end
 
       def current
-        Thread.current["#{name}.current"]
+        RequestStore.store[:"#{name}.current"]
       end
 
       def current_id
