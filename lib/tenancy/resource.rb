@@ -37,6 +37,7 @@ module Tenancy
           self.current = old
         end
       end
+      alias_method :use, :with
     end
   end
 end
