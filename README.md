@@ -107,17 +107,34 @@ class ApplicationController < ActionController::Base
   around_filter :route_domain
 
   protected
-  def route_domain(&block)
-    Portal.with(current_portal, &block)
-  end
 
-  def current_portal
-    @current_portal ||= Portal.find_by_domain_name(request.host)
-  end
+    def route_domain(&block)
+      Portal.with(current_portal, &block)
+    end
+
+    def current_portal
+      @current_portal ||= Portal.find_by_domain_name(request.host)
+    end
 end
 ```
 
-From version 0.2.0 up, you don't need to use `around_filter` because this gem add [request_store](https://github.com/steveklabnik/request_store) as dependency. It will clear threaded variables inside middleware on every request.
+From version 0.2.0 up, you don't need to use `around_filter` because this gem add [request_store](https://github.com/steveklabnik/request_store) as dependency. It will clear threaded variables inside middleware on every request. You can just use `before_filter` to set the current tenant.
+
+```ruby
+class ApplicationController < ActionController::Base
+  before_filter :set_current_portal
+
+  protected
+
+    def current_portal
+      @current_portal
+    end
+
+    def set_current_portal
+      @current_portal = Portal.find_by_domain_name(request.host)
+    end
+end
+```
 
 ## Indexes
 
