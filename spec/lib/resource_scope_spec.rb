@@ -11,31 +11,31 @@ describe "Tenancy::ResourceScope" do
 
   describe Listing do
     it { should belong_to(:portal) }
-    
+
     it { should validate_presence_of(:portal) }
 
     it { should validate_uniqueness_of(:name).scoped_to(:portal_id).case_insensitive }
-    
+
     it "have default_scope with :portal_id field" do
       Portal.current = camyp
 
-      Listing.scoped.to_sql.should == Listing.where(portal_id: Portal.current_id).to_sql
+      Listing.where(nil).to_sql.should == Listing.where(portal_id: Portal.current_id).to_sql
     end
 
     it "doesn't have default_scope when it doesn't have current portal" do
       Portal.current = nil
 
-      Listing.scoped.to_sql.should == "SELECT \"listings\".* FROM \"listings\" "
+      Listing.where(nil).to_sql.strip.should == %Q{SELECT "listings".* FROM "listings"}
     end
   end
 
   describe Communication do
     it { should belong_to(:portal) }
-    
+
     it { should validate_presence_of(:portal) }
 
     it { should belong_to(:listing) }
-    
+
     it { should validate_presence_of(:listing) }
 
     it { should validate_uniqueness_of(:value).scoped_to(:portal_id, :listing_id) }
@@ -44,14 +44,14 @@ describe "Tenancy::ResourceScope" do
       Portal.current  = camyp
       Listing.current = listing
 
-      Communication.scoped.to_sql.should == Communication.where(portal_id: Portal.current_id, listing_id: Listing.current_id).to_sql
+      Communication.where(nil).to_sql.should == Communication.where(portal_id: Portal.current_id, listing_id: Listing.current_id).to_sql
     end
 
     it "doesn't have default_scope when it doesn't have current portal and listing" do
       Portal.current  = nil
       Listing.current = nil
 
-      Communication.scoped.to_sql.should == "SELECT \"communications\".* FROM \"communications\" "
+      Communication.where(nil).to_sql.strip.should == %Q{SELECT "communications".* FROM "communications"}
     end
   end
 
@@ -69,7 +69,7 @@ describe "Tenancy::ResourceScope" do
 
       Portal.current = camyp
       Listing.current = listing2
-      
+
       extra_communication = ExtraCommunication.new
       extra_communication.listing_id.should == listing2.id
       extra_communication.portal_id.should  == camyp.id

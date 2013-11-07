@@ -41,7 +41,7 @@ module Tenancy
             scoped_class = reflection.class_name.constantize
 
             if scoped_class.current_id
-              actual_class.scoped.to_sql.include? %Q{#{actual_class.quoted_table_name}.#{scoped_class.connection.quote_column_name(reflection.foreign_key)} = #{scoped_class.connection.quote(scoped_class.current_id)}}
+              actual_class.where(nil).to_sql.include? %Q{#{actual_class.quoted_table_name}.#{scoped_class.connection.quote_column_name(reflection.foreign_key)} = #{scoped_class.connection.quote(scoped_class.current_id)}}
             else
               true
             end
