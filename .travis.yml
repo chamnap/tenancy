@@ -6,3 +6,5 @@ rvm:
 gemfile:
   - gemfiles/active_record_32.gemfile
   - gemfiles/active_record_40.gemfile
+notifications:
+  email: false
