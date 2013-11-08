@@ -2,4 +2,6 @@ source 'https://rubygems.org'
 
 gem 'activerecord', '~> 4.0.1', :require => 'active_record'
 
+gem "codeclimate-test-reporter", group: :test, require: nil
+
 gemspec :path => '../'
