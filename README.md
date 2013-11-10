@@ -1,6 +1,6 @@
 # Tenancy [![Build Status](https://travis-ci.org/yoolk/tenancy.png?branch=master)](https://travis-ci.org/yoolk/tenancy) [![Code Climate](https://codeclimate.com/repos/527a1d45f3ea005378005fdb/badges/cfbc9ff8993d02e13b9d/gpa.png)](https://codeclimate.com/repos/527a1d45f3ea005378005fdb/feed)
 
-`tenancy` is a simple gem that provides multi-tenancy support on activerecord through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
+**Tenancy** is a simple gem that provides multi-tenancy support on activerecord through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
 
 ## Installation
 
@@ -65,6 +65,7 @@ class Communication < ActiveRecord::Base
   include Tenancy::ResourceScope
 
   scope_to :portal, :listing
+  default_scope -> { where(is_active: true) }
   validates_uniqueness_in_scope :value
 end
 
@@ -77,13 +78,21 @@ class ExtraCommunication < ActiveRecord::Base
   validates_uniqueness_in_scope :value
 end
 
-Portal.current = 1
-Listing.find(1).to_sql
+> Portal.current = 1
+> Listing.find(1).to_sql
 # => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1 AND "id" = 1
 
-Listing.current = 1
-Communication.find(1).to_sql
-# => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "id" = 1
+> Listing.current = 1
+> Communication.find(1).to_sql
+# => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "is_active" = true AND "id" = 1
+
+# unscoped :current_portal, :current_listing
+> Communication.without_scope(:portal).find(1)
+# => SELECT "communications".* FROM "communications" WHERE "listing_id" = 1 AND "is_active" = true AND "id" = 1
+> Communication.without_scope(:listing).find(1)
+# => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "is_active" = true AND "id" = 1
+> Communication.without_scope(:portal, :listing).find(1)
+# => SELECT "communications".* FROM "communications" WHERE "is_active" = true AND "id" = 1
 ```
 
 `scope_to :portal` does 4 things:
