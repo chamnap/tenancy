@@ -6,6 +6,7 @@ class Listing < ActiveRecord::Base
   include Tenancy::Resource
   include Tenancy::ResourceScope
 
+  default_scope -> { where(is_active: true) }
   scope_to :portal
   validates_uniqueness_in_scope :name, case_sensitive: false
 end
@@ -13,6 +14,7 @@ end
 class Communication < ActiveRecord::Base
   include Tenancy::ResourceScope
 
+  default_scope -> { where(is_active: true) }
   scope_to :portal, :listing
   validates_uniqueness_in_scope :value
 end

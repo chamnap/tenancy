@@ -15,14 +15,16 @@ ActiveRecord::Schema.define do
   create_table :listings, :force => true do |t|
     t.string :name
     t.references :portal
+    t.boolean :is_active
     t.timestamps
   end
-  
+
   create_table :communications, :force => true do |t|
     t.string :label
     t.string :value
     t.references :listing
     t.references :portal
+    t.boolean :is_active
     t.timestamps
   end
 
