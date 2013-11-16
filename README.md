@@ -131,7 +131,7 @@ From version 0.2.0 up, you don't need to use `around_filter` because this gem ad
 
 ```ruby
 class ApplicationController < ActionController::Base
-  before_filter :set_current_portal
+  before_filter :scope_current_portal
 
   protected
 
@@ -139,8 +139,8 @@ class ApplicationController < ActionController::Base
       Portal.current
     end
 
-    def set_current_portal
-      Portal.current  = Portal.find_by_domain_name(request.host)
+    def scope_current_portal
+      Portal.current = Portal.find_by_domain_name(request.host)
     end
 end
 ```
