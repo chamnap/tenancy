@@ -136,11 +136,11 @@ class ApplicationController < ActionController::Base
   protected
 
     def current_portal
-      @current_portal
+      Portal.current
     end
 
     def set_current_portal
-      @current_portal = Portal.find_by_domain_name(request.host)
+      Portal.current  = Portal.find_by_domain_name(request.host)
     end
 end
 ```
