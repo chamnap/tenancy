@@ -12,6 +12,9 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{A simple multitenancy with activerecord through scoping}
   spec.homepage      = "https://github.com/yoolk/tenancy"
   spec.license       = "MIT"
+  
+  spec.required_ruby_version     = '>= 1.9.3'
+  spec.required_rubygems_version = '>= 1.8.11'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
