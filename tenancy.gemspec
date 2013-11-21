@@ -6,7 +6,7 @@ require 'tenancy/version'
 Gem::Specification.new do |spec|
   spec.name          = "tenancy"
   spec.version       = Tenancy::VERSION
-  spec.authors       = ["chamnap"]
+  spec.authors       = ["Chamnap Chhorn"]
   spec.email         = ["chamnapchhorn@gmail.com"]
   spec.description   = %q{A simple multitenancy with activerecord through scoping}
   spec.summary       = %q{A simple multitenancy with activerecord through scoping}
