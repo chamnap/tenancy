@@ -178,6 +178,7 @@ end
 I have this rspec configuration in my rails 4 apps:
 
 ```ruby
+RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner[:active_record].strategy = :transaction
     DatabaseCleaner[:active_record].clean_with(:truncation)
@@ -197,6 +198,7 @@ I have this rspec configuration in my rails 4 apps:
       example.run
     end
   end
+end
 ```
 
 ## Authors
