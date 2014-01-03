@@ -1,4 +1,4 @@
-# Tenancy [![Gem Version](https://badge.fury.io/rb/tenancy.png)](http://badge.fury.io/rb/tenancy) [![Build Status](https://travis-ci.org/yoolk/tenancy.png?branch=master)](https://travis-ci.org/yoolk/tenancy) [![Code Climate](https://codeclimate.com/repos/527a1d45f3ea005378005fdb/badges/cfbc9ff8993d02e13b9d/gpa.png)](https://codeclimate.com/repos/527a1d45f3ea005378005fdb/feed) [![Dependency Status](https://gemnasium.com/yoolk/tenancy.png)](https://gemnasium.com/yoolk/tenancy) [![Coverage Status](https://coveralls.io/repos/yoolk/tenancy/badge.png?branch=master)](https://coveralls.io/r/yoolk/tenancy?branch=master)
+# Tenancy [![Gem Version](https://badge.fury.io/rb/tenancy.png)](http://badge.fury.io/rb/tenancy) [![Build Status](https://travis-ci.org/yoolk/tenancy.png?branch=master)](https://travis-ci.org/yoolk/tenancy) [![Dependency Status](https://gemnasium.com/yoolk/tenancy.png)](https://gemnasium.com/yoolk/tenancy) [![Coverage Status](https://coveralls.io/repos/yoolk/tenancy/badge.png?branch=master)](https://coveralls.io/r/yoolk/tenancy?branch=master)
 
 **Tenancy** is a simple gem that provides multi-tenancy support on activerecord through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
 
@@ -173,6 +173,30 @@ describe Listing do
   it { should have_scope_to(:portal) }
   it { should have_scope_to(:portal).class_name('Portal') }
 end
+```
+
+I have this rspec configuration in my rails 4 apps:
+
+```ruby
+  config.before(:suite) do
+    DatabaseCleaner[:active_record].strategy = :transaction
+    DatabaseCleaner[:active_record].clean_with(:truncation)
+    DatabaseCleaner[:mongoid].clean_with(:truncation)
+  end
+
+  config.after(:each) do
+    DatabaseCleaner[:active_record].clean
+  end
+
+  config.around(:each) do |example|
+    # call it here, so that it start counting. It runs ahead the before block.
+    DatabaseCleaner[:active_record].start
+
+    current_portal = FactoryGirl.create(:portal, domain_name: "localhost.dev")
+    Yoolk::Portal.use(current_portal) do
+      example.run
+    end
+  end
 ```
 
 ## Authors
