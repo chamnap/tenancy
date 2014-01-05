@@ -185,18 +185,15 @@ RSpec.configure do |config|
     DatabaseCleaner[:mongoid].clean_with(:truncation)
   end
 
-  config.after(:each) do
-    DatabaseCleaner[:active_record].clean
-  end
-
   config.around(:each) do |example|
-    # call it here, so that it start counting. It runs ahead the before block.
     DatabaseCleaner[:active_record].start
 
     current_portal = FactoryGirl.create(:portal, domain_name: "localhost.dev")
     Yoolk::Portal.use(current_portal) do
       example.run
     end
+    
+    DatabaseCleaner[:active_record].clean
   end
 end
 ```
