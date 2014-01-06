@@ -181,19 +181,23 @@ I have this rspec configuration in my rails 4 apps:
 RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner[:active_record].strategy = :transaction
+    DatabaseCleaner[:mongoid].strategy       = :truncation
+
     DatabaseCleaner[:active_record].clean_with(:truncation)
     DatabaseCleaner[:mongoid].clean_with(:truncation)
   end
 
   config.around(:each) do |example|
     DatabaseCleaner[:active_record].start
+    DatabaseCleaner[:mongoid].start
 
-    current_portal = FactoryGirl.create(:portal, domain_name: "localhost.dev")
+    current_portal = FactoryGirl.create(:portal, domain_name: "yellowpages-cambodia.dev")
     Yoolk::Portal.use(current_portal) do
       example.run
     end
-    
+
     DatabaseCleaner[:active_record].clean
+    DatabaseCleaner[:mongoid].clean if example.metadata[:mongodb]
   end
 end
 ```
