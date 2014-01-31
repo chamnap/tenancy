@@ -15,6 +15,10 @@ module Tenancy
         tenancy_scope.without_scope(resources)
       end
 
+      def only_scope(*resources)
+        tenancy_scope.only_scope(resources)
+      end
+
       def validates_uniqueness_in_scope(fields, args={})
         tenancy_scope.validates_uniqueness_in_scope(fields, args)
       end

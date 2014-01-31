@@ -1,9 +1,9 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe "Tenancy::ResourceScope" do
-  let(:camyp)     { Portal.create(domain_name: 'yp.com.kh') }
-  let(:panpages)  { Portal.create(domain_name: 'panpages.com') }
-  let(:listing)   { Listing.create(name: 'Listing 1', portal_id: camyp.id) }
+describe "Tenancy::Scoping::ActiveRecord" do
+  let(:camyp)     { Portal.create(domain_name: "yp.com.kh") }
+  let(:panpages)  { Portal.create(domain_name: "panpages.com") }
+  let(:listing)   { Listing.create(name: "Listing 1", portal_id: camyp.id) }
 
   after(:all) do
     Portal.delete_all
@@ -62,11 +62,11 @@ describe "Tenancy::ResourceScope" do
     it { should belong_to(:listing) }
 
     it "raise exception when passing two resources and options" do
-      expect { ExtraCommunication.scope_to(:portal, :listing, class_name: 'Listing') }.to raise_error(ArgumentError)
+      expect { ExtraCommunication.scope_to(:portal, :listing, class_name: "Listing") }.to raise_error(ArgumentError)
     end
 
     it "uses the correct scope" do
-      listing2 = Listing.create(name: 'Name 2', portal: camyp)
+      listing2 = Listing.create(name: "Name 2", portal: camyp)
 
       Portal.current = camyp
       Listing.current = listing2
@@ -82,12 +82,12 @@ describe "Tenancy::ResourceScope" do
     after(:each)  { Portal.current = nil }
 
     it "reload belongs_to when passes true" do
-      listing.portal.domain_name = 'abc.com'
+      listing.portal.domain_name = "abc.com"
       expect(listing.portal(true).object_id).not_to eq(Portal.current.object_id)
     end
 
     it "doesn't reload belongs_to" do
-      listing.portal.domain_name = 'abc.com'
+      listing.portal.domain_name = "abc.com"
       expect(listing.portal.object_id).to eq(Portal.current.object_id)
     end
 
@@ -120,6 +120,31 @@ describe "Tenancy::ResourceScope" do
       expect(Communication.without_scope(:portal).to_sql).not_to include(%{"communications"."portal_id" = #{Portal.current_id}})
       expect(Communication.without_scope(:listing).to_sql).not_to include(%{"communications"."listing_id" = #{Listing.current_id}})
       expect(Communication.without_scope(:portal, :listing).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't'})
+    end
+  end
+
+  describe "#only_scope" do
+    before(:each) { Portal.current = camyp }
+    after(:each)  { Portal.current = nil and Listing.current = nil }
+
+    it "scopes only :current_portal" do
+      Listing.current = listing
+
+      expect(Communication.only_scope(:portal).to_sql).not_to include(%{"communications"."listing_id" = #{Listing.current_id}})
+      expect(Communication.only_scope(:portal).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."portal_id" = #{Portal.current_id}})
+    end
+
+    it "scopes only :current_listing" do
+      Listing.current = listing
+
+      expect(Communication.only_scope(:listing).to_sql).not_to include(%{"communications"."portal_id" = #{Portal.current_id}})
+      expect(Communication.only_scope(:listing).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."listing_id" = #{Listing.current_id}})
+    end
+
+    it "scopes only :current_listing and :current_portal" do
+      Listing.current = listing
+
+      expect(Communication.only_scope(:listing, :portal).to_sql).to eq(Communication.where(nil).to_sql)
     end
   end
 end
