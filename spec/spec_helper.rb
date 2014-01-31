@@ -12,14 +12,14 @@ SimpleCov.start do
   add_filter "/spec/"
 end
 
-require 'tenancy'
+require "pry"
+require "tenancy"
 
 # active_record
-load File.dirname(__FILE__) + '/support/schema.rb'
-load File.dirname(__FILE__) + '/support/models.rb'
+load File.dirname(__FILE__) + "/support/schema.rb"
+load File.dirname(__FILE__) + "/support/models.rb"
 
-require 'pry'
-require 'shoulda-matchers'
+require "shoulda-matchers"
 
 RSpec.configure do |config|
   config.filter_run focus: true
