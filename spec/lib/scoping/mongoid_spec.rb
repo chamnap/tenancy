@@ -61,14 +61,14 @@ if defined?(Mongoid)
         expect { Mongo::ExtraCommunication.scope_to(:portal, :listing, class_name: "Mongo::Listing") }.to raise_error(ArgumentError)
       end
 
-      it "uses the correct scope" do
+      it "uses the correct scope", :pending do
         listing2 = Mongo::Listing.create(name: "Name 2", portal: camyp)
 
         Mongo::Portal.current = camyp
         Mongo::Listing.current = listing2
 
         extra_communication = Mongo::ExtraCommunication.new
-        # expect(extra_communication.listing_id).to eq(listing2.id)
+        expect(extra_communication.listing_id).to eq(listing2.id)
         expect(extra_communication.portal_id).to eq(camyp.id)
       end
     end
