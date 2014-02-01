@@ -40,7 +40,7 @@ describe "Tenancy::Scoping::ActiveRecord" do
 
     it { should validate_uniqueness_of(:value).scoped_to(:portal_id, :listing_id) }
 
-    it "have default_scope with :portal_id field" do
+    it "have default_scope with :portal_id and :listing_id" do
       Portal.current  = camyp
       Listing.current = listing
 

@@ -1,7 +1,7 @@
-require 'active_record'
-require 'logger'
+require "active_record"
+require "logger"
 
-ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: 'spec/test.sqlite3')
+ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: "spec/test.sqlite3")
 ActiveRecord::Migration.verbose = false
 
 ActiveRecord::Schema.define do

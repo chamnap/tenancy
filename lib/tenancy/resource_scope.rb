@@ -4,7 +4,11 @@ module Tenancy
 
     module ClassMethods
       def tenancy_scope
-        @tenancy_scope ||= Scoping::ActiveRecord.new(self)
+        @tenancy_scope ||= if superclass == ::ActiveRecord::Base
+          Scoping::ActiveRecord.new(self)
+        elsif Mongoid::Document.in? self.included_modules
+          Scoping::Mongoid.new(self)
+        end
       end
 
       def scope_to(*resources)

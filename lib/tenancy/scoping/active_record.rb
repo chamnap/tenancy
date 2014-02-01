@@ -29,7 +29,6 @@ module Tenancy
       end
     end
 
-    # inspired by: https://github.com/goncalossilva/acts_as_paranoid/blob/rails3.2/lib/acts_as_paranoid/core.rb#L76
     def without_scope(resources)
       scope = klass.where(nil).with_default_scope
       resources.each do |resource|
@@ -69,6 +68,7 @@ module Tenancy
     end
 
     private
+
       def resource_reflection(resource)
         klass.reflect_on_association(resource.to_sym)
       end

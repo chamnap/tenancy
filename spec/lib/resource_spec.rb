@@ -41,17 +41,17 @@ describe "Tenancy::Resource" do
     Portal.current_id.should == @yoolk.id
   end
 
-  it "#with with block" do
+  it "#with_scope with block" do
     Portal.current.should == nil
 
-    Portal.with(@yoolk) do
+    Portal.with_scope(@yoolk) do
       Portal.current.should == @yoolk
     end
 
     Portal.current.should == nil
   end
 
-  it "#with without block" do
-    expect { Portal.with(@yoolk) }.to raise_error(ArgumentError)
+  it "#with_scope without block" do
+    expect { Portal.with_scope(@yoolk) }.to raise_error(ArgumentError)
   end
 end
