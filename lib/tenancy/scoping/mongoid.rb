@@ -60,6 +60,17 @@ module Tenancy
 
         scope
       end
+
+      def validates_uniqueness_in_scope(fields, args={})
+        foreign_keys = scoped_resources.map { |resource| resource_reflection(resource).foreign_key }
+        if args[:scope]
+          args[:scope] = Array.wrap(args[:scope]) << foreign_keys
+        else
+          args[:scope] = foreign_keys
+        end
+
+        klass.validates_uniqueness_of(fields, args)
+      end
     end
 
     private

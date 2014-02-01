@@ -4,9 +4,9 @@ module Tenancy
 
     module ClassMethods
       def tenancy_scope
-        @tenancy_scope ||= if superclass == ::ActiveRecord::Base
+        @tenancy_scope ||= if defined?(::ActiveRecord) && superclass == ::ActiveRecord::Base
           Scoping::ActiveRecord.new(self)
-        elsif Mongoid::Document.in? self.included_modules
+        elsif defined?(Mongoid) && Mongoid::Document.in?(self.included_modules)
           Scoping::Mongoid.new(self)
         end
       end

@@ -13,7 +13,7 @@ module Mongo
 
     default_scope -> { where(is_active: true) }
     scope_to      :portal, class_name: "Mongo::Portal"
-    # validates_uniqueness_in_scope :name, case_sensitive: false
+    validates_uniqueness_in_scope :name, case_sensitive: false
 
     field :name, type: String
   end
@@ -25,7 +25,7 @@ module Mongo
     default_scope -> { where(is_active: true) }
     scope_to      :portal, class_name: "Mongo::Portal"
     scope_to      :listing, class_name: "Mongo::Listing"
-    # validates_uniqueness_in_scope :value
+    validates_uniqueness_in_scope :value
   end
 
   class ExtraCommunication
