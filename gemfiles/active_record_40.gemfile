@@ -1,7 +1,14 @@
 source "https://rubygems.org"
 
-gem "activerecord", "~> 4.0.1", :require => "active_record"
+gem "activerecord", "~> 4.0.2", :require => "active_record"
+gem "mongoid", "~> 4.0.0.alpha2"
 gem "coveralls", require: false
 gem "codeclimate-test-reporter", group: :test, require: nil
+gem "rspec"
+gem "mongoid-rspec"
+gem "shoulda"
+gem "pry"
+gem "sqlite3"
+gem "rake"
 
 gemspec :path => "../"

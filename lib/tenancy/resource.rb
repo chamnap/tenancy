@@ -25,7 +25,7 @@ module Tenancy
         current.try(:id)
       end
 
-      def with_scope(tenant, &block)
+      def with_tenant(tenant, &block)
         raise ArgumentError, "block required" if block.nil?
 
         begin
@@ -37,7 +37,7 @@ module Tenancy
           self.current = old
         end
       end
-      alias_method :use_scope, :with_scope
+      alias_method :use_tenant, :with_tenant
     end
   end
 end

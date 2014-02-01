@@ -12,7 +12,6 @@ module Tenancy
 
         # validates and belongs_to
         klass.validates       resource, presence: true
-        klass.before_validation { self.send(:"#{resource}=", resource_class.current) }
         klass.belongs_to      resource, options
 
         # default_scope
