@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'tenancy'
+gem "tenancy"
 ```
 
 And then execute:
@@ -43,7 +43,7 @@ Portal.current
 # => <Portal id: 1, domain_name: 'yp.com.kh'>
 
 # scope with this portal
-Portal.with(camyp) do
+Portal.with_tenant(camyp) do
   # Do something here with this portal
 end
 ```

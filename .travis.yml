@@ -9,6 +9,8 @@ env:
 gemfile:
   - gemfiles/active_record_32.gemfile
   - gemfiles/active_record_40.gemfile
+  - gemfiles/mongoid_3.gemfile
+  - gemfiles/mongoid_4.gemfile
 notifications:
   email: false
 addons:
