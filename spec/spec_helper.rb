@@ -52,6 +52,7 @@ RSpec.configure do |config|
       end
     end
     DatabaseCleaner.start
+    RequestStore.clear!
 
     example.run
 

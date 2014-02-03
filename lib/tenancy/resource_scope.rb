@@ -21,7 +21,7 @@ module Tenancy
         def tenancy_scoping
           @tenancy_scoping ||= if defined?(::ActiveRecord) && ancestors.include?(::ActiveRecord::Base)
             Scoping::ActiveRecord.new(self)
-          elsif defined?(Mongoid) && ancestors.included?(Mongoid::Document)
+          elsif defined?(Mongoid) && ancestors.include?(Mongoid::Document)
             Scoping::Mongoid.new(self)
           end
         end

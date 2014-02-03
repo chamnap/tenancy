@@ -76,7 +76,6 @@ if defined?(ActiveRecord)
 
     describe "belongs_to method override" do
       before(:each) { Portal.current = camyp }
-      after(:each)  { Portal.current = nil }
 
       it "reload belongs_to when passes true" do
         listing.portal.domain_name = "abc.com"
@@ -105,7 +104,6 @@ if defined?(ActiveRecord)
 
     describe "#tenant_scope" do
       before(:each) { Portal.current = camyp }
-      after(:each)  { Portal.current = nil and Listing.current = nil }
 
       it "scopes only :current_portal" do
         Listing.current = listing

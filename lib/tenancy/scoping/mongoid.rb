@@ -30,6 +30,17 @@ module Tenancy
           send(:"#{tenant_name}_without_tenant", reload)
         })
         klass.alias_method_chain :"#{tenant_name}", :tenant
+
+        # override getter for mongoid 3.1
+        if ::Mongoid::VERSION.start_with?("3.1.")
+          klass.send(:define_method, tenant.foreign_key, lambda {
+            value = super()
+            if value.nil? && new_record?
+              self[tenant.foreign_key] = tenant.klass.current_id
+            end
+            self[tenant.foreign_key]
+          })
+        end
       end
 
       # tenants variable is for lambda
@@ -48,7 +59,7 @@ module Tenancy
       tenants.each do |tenant|
         next if tenant_names.include?(tenant.name.to_sym)
 
-        scope.selector.delete(tenant.foreign_key)
+        scope.selector.delete(tenant.foreign_key.to_s)
       end
 
       scope

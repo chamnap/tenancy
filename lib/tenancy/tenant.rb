@@ -6,7 +6,7 @@ module Tenancy
       @name        = name.to_sym
       @klass_name  = (klass_name.to_s.presence || name.to_s).classify
       @klass       = @klass_name.constantize
-      @foreign_key = host_klass.reflect_on_association(@name).foreign_key
+      @foreign_key = host_klass.reflect_on_association(@name).foreign_key.to_sym
     end
 
   end

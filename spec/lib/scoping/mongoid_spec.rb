@@ -61,7 +61,7 @@ if defined?(Mongoid)
         expect { Mongo::ExtraCommunication.scope_to(:portal, :listing, class_name: "Mongo::Listing") }.to raise_error(ArgumentError)
       end
 
-      it "uses the correct scope", :pending do
+      it "uses the correct scope" do
         listing2 = Mongo::Listing.create(name: "Name 2", portal: camyp)
 
         Mongo::Portal.current = camyp
@@ -75,7 +75,6 @@ if defined?(Mongoid)
 
     describe "belongs_to method override" do
       before(:each) { Mongo::Portal.current = camyp }
-      after(:each)  { Mongo::Portal.current = nil }
 
       it "reload belongs_to when passes true" do
         listing.portal.domain_name = "abc.com"
@@ -106,7 +105,6 @@ if defined?(Mongoid)
 
     describe "#shard_key_selector override" do
       before(:each) { Mongo::Portal.current = camyp }
-      after(:each)  { Mongo::Portal.current = nil and Mongo::Listing.current = nil }
 
       it "returns with current_portal" do
         expect(Mongo::Communication.new.shard_key_selector).to eq({"portal_id"=>camyp.id})
@@ -128,7 +126,6 @@ if defined?(Mongoid)
 
     describe "#tenant_scope" do
       before(:each) { Mongo::Portal.current = camyp }
-      after(:each)  { Mongo::Portal.current = nil and Mongo::Listing.current = nil }
 
       it "scopes only :current_portal" do
         Mongo::Listing.current = listing
