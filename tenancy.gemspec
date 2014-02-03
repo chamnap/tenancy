@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Tenancy::VERSION
   spec.authors       = ["Chamnap Chhorn"]
   spec.email         = ["chamnapchhorn@gmail.com"]
-  spec.description   = %q{A simple multitenancy with activerecord through scoping}
-  spec.summary       = %q{A simple multitenancy with activerecord through scoping}
+  spec.description   = %q{A simple multitenancy with activerecord/mongoid through scoping}
+  spec.summary       = %q{A simple multitenancy with activerecord/mongoid through scoping}
   spec.homepage      = "https://github.com/yoolk/tenancy"
   spec.license       = "MIT"
 

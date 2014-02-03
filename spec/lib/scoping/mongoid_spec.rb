@@ -104,43 +104,48 @@ if defined?(Mongoid)
       end
     end
 
-    describe "#without_scope" do
+    describe "#shard_key_selector override" do
       before(:each) { Mongo::Portal.current = camyp }
       after(:each)  { Mongo::Portal.current = nil and Mongo::Listing.current = nil }
 
-      it "unscopes :current_portal" do
-        expect(Mongo::Listing.without_scope(:portal).selector).to eq({"is_active"=>true})
+      it "returns with current_portal" do
+        expect(Mongo::Communication.new.shard_key_selector).to eq({"portal_id"=>camyp.id})
       end
 
-      it "unscopes :current_portal and :current_listing" do
+      it "returns with current_listing" do
         Mongo::Listing.current = listing
 
-        expect(Mongo::Communication.without_scope(:portal).selector).to eq({"is_active"=>true, "listing_id"=>Mongo::Listing.current_id})
-        expect(Mongo::Communication.without_scope(:listing).selector).to eq({"is_active"=>true, "portal_id"=>Mongo::Portal.current_id})
-        expect(Mongo::Communication.without_scope(:portal, :listing).selector).to eq({"is_active"=>true})
+        expect(Mongo::Communication.new.shard_key_selector).to eq({"portal_id"=>camyp.id, "listing_id"=>listing.id})
+      end
+
+      it "returns without :current_portal and :current_listing" do
+        Mongo::Portal.current  = nil
+        Mongo::Listing.current = nil
+
+        expect(Mongo::Communication.new.shard_key_selector).to eq({})
       end
     end
 
-    describe "#only_scope" do
+    describe "#tenant_scope" do
       before(:each) { Mongo::Portal.current = camyp }
       after(:each)  { Mongo::Portal.current = nil and Mongo::Listing.current = nil }
 
       it "scopes only :current_portal" do
         Mongo::Listing.current = listing
 
-        expect(Mongo::Communication.only_scope(:portal).selector).to eq({"is_active"=>true, "portal_id"=>Mongo::Portal.current_id})
+        expect(Mongo::Communication.tenant_scope(:portal).selector).to eq({"is_active"=>true, "portal_id"=>Mongo::Portal.current_id})
       end
 
       it "scopes only :current_listing" do
         Mongo::Listing.current = listing
 
-        expect(Mongo::Communication.only_scope(:listing).selector).to eq({"is_active"=>true, "listing_id"=>Mongo::Listing.current_id})
+        expect(Mongo::Communication.tenant_scope(:listing).selector).to eq({"is_active"=>true, "listing_id"=>Mongo::Listing.current_id})
       end
 
       it "scopes only :current_listing and :current_portal" do
         Mongo::Listing.current = listing
 
-        expect(Mongo::Communication.only_scope(:listing, :portal).selector).to eq(Mongo::Communication.where(nil).selector)
+        expect(Mongo::Communication.tenant_scope(:listing, :portal).selector).to eq(Mongo::Communication.where(nil).selector)
       end
     end
   end

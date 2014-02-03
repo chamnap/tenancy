@@ -103,45 +103,28 @@ if defined?(ActiveRecord)
       end
     end
 
-    describe "#without_scope" do
-      before(:each) { Portal.current = camyp }
-      after(:each)  { Portal.current = nil and Listing.current = nil }
-
-      it "unscopes :current_portal" do
-        expect(Listing.without_scope(:portal).to_sql).not_to include(%{"listings"."portal_id" = #{Portal.current_id}})
-      end
-
-      it "unscopes :current_portal and :current_listing" do
-        Listing.current = listing
-
-        expect(Communication.without_scope(:portal).to_sql).not_to include(%{"communications"."portal_id" = #{Portal.current_id}})
-        expect(Communication.without_scope(:listing).to_sql).not_to include(%{"communications"."listing_id" = #{Listing.current_id}})
-        expect(Communication.without_scope(:portal, :listing).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't'})
-      end
-    end
-
-    describe "#only_scope" do
+    describe "#tenant_scope" do
       before(:each) { Portal.current = camyp }
       after(:each)  { Portal.current = nil and Listing.current = nil }
 
       it "scopes only :current_portal" do
         Listing.current = listing
 
-        expect(Communication.only_scope(:portal).to_sql).not_to include(%{"communications"."listing_id" = #{Listing.current_id}})
-        expect(Communication.only_scope(:portal).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."portal_id" = #{Portal.current_id}})
+        expect(Communication.tenant_scope(:portal).to_sql).not_to include(%{"communications"."listing_id" = #{Listing.current_id}})
+        expect(Communication.tenant_scope(:portal).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."portal_id" = #{Portal.current_id}})
       end
 
       it "scopes only :current_listing" do
         Listing.current = listing
 
-        expect(Communication.only_scope(:listing).to_sql).not_to include(%{"communications"."portal_id" = #{Portal.current_id}})
-        expect(Communication.only_scope(:listing).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."listing_id" = #{Listing.current_id}})
+        expect(Communication.tenant_scope(:listing).to_sql).not_to include(%{"communications"."portal_id" = #{Portal.current_id}})
+        expect(Communication.tenant_scope(:listing).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."listing_id" = #{Listing.current_id}})
       end
 
       it "scopes only :current_listing and :current_portal" do
         Listing.current = listing
 
-        expect(Communication.only_scope(:listing, :portal).to_sql).to eq(Communication.where(nil).to_sql)
+        expect(Communication.tenant_scope(:listing, :portal).to_sql).to eq(Communication.where(nil).to_sql)
       end
     end
   end

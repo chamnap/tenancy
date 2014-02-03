@@ -3,11 +3,11 @@ module Tenancy
     autoload :ActiveRecord, "tenancy/scoping/active_record"
     autoload :Mongoid,      "tenancy/scoping/mongoid"
 
-    attr_reader :klass, :scoped_resources
+    attr_reader :klass, :tenants
 
     def initialize(klass)
-      @klass            = klass
-      @scoped_resources = []
+      @klass   = klass
+      @tenants = []
     end
   end
 end

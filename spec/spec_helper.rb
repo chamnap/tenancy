@@ -14,6 +14,7 @@ end
 
 require "pry"
 require "database_cleaner"
+require "logger"
 require "tenancy"
 
 # active_record
@@ -28,10 +29,6 @@ if Gem.loaded_specs["mongoid"]
   load File.dirname(__FILE__) + "/support/mongoid/connection.rb"
   load File.dirname(__FILE__) + "/support/mongoid/models.rb"
   require "mongoid-rspec"
-
-  RSpec.configure do |config|
-    config.include Mongoid::Matchers, mongoid: true
-  end
 end
 
 RSpec.configure do |config|
@@ -42,12 +39,29 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :truncation
   end
+  config.include Mongoid::Matchers, mongoid: true if defined?(Mongoid)
 
   config.around(:each) do |example|
+    if example.metadata[:log]
+      if defined?(ActiveRecord)
+        ActiveRecord::Base.logger = Logger.new(STDOUT)
+      end
+      if defined?(Mongoid)
+        Mongoid.logger.level = Logger::DEBUG
+        Moped.logger.level = Logger::DEBUG
+      end
+    end
     DatabaseCleaner.start
 
     example.run
 
+    if defined?(ActiveRecord)
+      ActiveRecord::Base.logger = nil
+    end
+    if defined?(Mongoid)
+      Mongoid.logger.level = Logger::INFO
+      Moped.logger.level = Logger::INFO
+    end
     DatabaseCleaner.clean
   end
 end

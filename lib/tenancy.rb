@@ -6,4 +6,5 @@ module Tenancy
   autoload :Resource,      "tenancy/resource"
   autoload :ResourceScope, "tenancy/resource_scope"
   autoload :Scoping,       "tenancy/scoping"
+  autoload :Tenant,        "tenancy/tenant"
 end
