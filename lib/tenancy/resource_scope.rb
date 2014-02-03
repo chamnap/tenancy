@@ -19,9 +19,9 @@ module Tenancy
       private
 
         def tenancy_scoping
-          @tenancy_scoping ||= if defined?(::ActiveRecord) && superclass == ::ActiveRecord::Base
+          @tenancy_scoping ||= if defined?(::ActiveRecord) && ancestors.include?(::ActiveRecord::Base)
             Scoping::ActiveRecord.new(self)
-          elsif defined?(Mongoid) && Mongoid::Document.in?(self.included_modules)
+          elsif defined?(Mongoid) && ancestors.included?(Mongoid::Document)
             Scoping::Mongoid.new(self)
           end
         end
