@@ -1,6 +1,8 @@
 # Tenancy [![Gem Version](https://badge.fury.io/rb/tenancy.png)](http://badge.fury.io/rb/tenancy) [![Build Status](https://travis-ci.org/yoolk/tenancy.png?branch=master)](https://travis-ci.org/yoolk/tenancy) [![Dependency Status](https://gemnasium.com/yoolk/tenancy.png)](https://gemnasium.com/yoolk/tenancy) [![Coverage Status](https://coveralls.io/repos/yoolk/tenancy/badge.png?branch=master)](https://coveralls.io/r/yoolk/tenancy?branch=master)
 
-**Tenancy** is a simple gem that provides multi-tenancy support on activerecord through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
+**Tenancy** is a simple gem that provides multi-tenancy support on activerecord/mongoid (3/4) through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
+
+This `README.md` file is for the latest version, v1.0.0. For the previous version, check out this [README.md](https://github.com/yoolk/tenancy/blob/v0.2.0/README.md).
 
 ## Installation
 
@@ -105,33 +107,17 @@ end
 
 4. it overrides `#portal` so that it doesn't touch the database if `portal_id` in that record is the same as `Portal.current_id`.
 
+5. it overrides `#portal_id` so that it returns `Portal.current_id`. (mongoid 3 only)
+
+6. it overrides `#shard_key_selector` so that every update/delete query includes current tenant_id. (mongoid 3/4)
+
 `validates :value, uniqueness: true` will validates uniqueness against the whole table. `validates_uniqueness_in_scope` validates uniqueness with the scopes you passed in `scope_to`.
 
 ## Rails
 
-Because `#current` is using thread variable, it's advisable to set to `nil` after processing controller action. This can be easily achievable by using `around_filter` and `#with` inside `application_controller.rb`. Or, you can do it manually by using `#current=`.
-
 ```ruby
 class ApplicationController < ActionController::Base
-  around_filter :route_domain
-
-  protected
-
-    def route_domain(&block)
-      Portal.with(current_portal, &block)
-    end
-
-    def current_portal
-      @current_portal ||= Portal.find_by_domain_name(request.host)
-    end
-end
-```
-
-From version 0.2.0 up, you don't need to use `around_filter` because this gem add [request_store](https://github.com/steveklabnik/request_store) as dependency. It will clear threaded variables inside middleware on every request. You can just use `before_filter` to set the current tenant.
-
-```ruby
-class ApplicationController < ActionController::Base
-  before_filter :scope_current_portal
+  before_action :set_current_portal
 
   protected
 
@@ -139,7 +125,7 @@ class ApplicationController < ActionController::Base
       Portal.current
     end
 
-    def scope_current_portal
+    def set_current_portal
       Portal.current = Portal.find_by_domain_name(request.host)
     end
 end

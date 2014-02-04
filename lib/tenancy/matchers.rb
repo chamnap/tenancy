@@ -1,4 +1,5 @@
-require 'shoulda-matchers'
+require "shoulda-matchers" if defined?(ActiveRecord)
+require "mongoid-rspec"    if defined?(Mongoid)
 
 module Tenancy
   module Shoulda
@@ -12,16 +13,25 @@ module Tenancy
       end
 
       class HaveScopeToMatcher
+        attr_reader :scope_name
+
         def initialize(scope_name)
-          @scope_name        = scope_name
-          @presence_matcher  = ::Shoulda::Matchers::ActiveModel::ValidatePresenceOfMatcher.new(@scope_name)
-          @belong_to_matcher = ::Shoulda::Matchers::ActiveRecord::AssociationMatcher.new(:belongs_to, @scope_name)
+          @scope_name             = scope_name
+          @ar_presence_matcher    = ::Shoulda::Matchers::ActiveModel::ValidatePresenceOfMatcher.new(@scope_name)
+          @ar_belong_to_matcher   = ::Shoulda::Matchers::ActiveRecord::AssociationMatcher.new(:belongs_to, @scope_name)
+          @mid_presence_matcher   = ::Mongoid::Matchers::Validations::HaveValidationMatcher.new(@scope_name, :presence)
+          @mid_belong_to_matcher  = ::Mongoid::Matchers::Associations::HaveAssociationMatcher.new(@scope_name, ::Mongoid::Matchers::Associations::BELONGS_TO)
         end
 
         def matches?(subject)
-          @presence_matches      = @presence_matcher.matches?(subject)
-          @belong_to_matches     = @belong_to_matcher.matches?(subject)
-          @default_scope_matches = default_scope_matches?(subject)
+          if subject.class <= ::ActiveRecord::Base
+            @ar_presence_matcher.matches?(subject) &&
+            @ar_belong_to_matcher.matches?(subject) &&
+            ar_default_scope_matches?(subject)
+          elsif subject.class <= ::Mongoid::Document
+            @mid_presence_matcher.matches?(subject) &&
+            @mid_belong_to_matcher.matches?(subject)
+          end
         end
 
         def failure_message
@@ -35,7 +45,8 @@ module Tenancy
         end
 
         private
-          def default_scope_matches?(subject)
+
+          def ar_default_scope_matches?(subject)
             actual_class = subject.class
             reflection   = actual_class.reflect_on_association(@scope_name.to_sym)
             scoped_class = reflection.class_name.constantize
@@ -48,8 +59,10 @@ module Tenancy
           end
 
           def method_missing(method, *args, &block)
-            if @belong_to_matcher.respond_to?(method)
-              @belong_to_matcher.send(method, *args, &block)
+            if @ar_belong_to_matcher.respond_to?(method)
+              @ar_belong_to_matcher.send(method, *args, &block)
+            elsif @mid_belong_to_matcher.respond_to?(method)
+              @mid_belong_to_matcher.send(method, *args, &block)
             else
               super
             end
@@ -77,7 +90,7 @@ module Tenancy
 end
 
 
-require 'rspec/core'
+require "rspec/core"
 RSpec.configure do |config|
   config.include Tenancy::Shoulda::Matchers
 end
