@@ -145,5 +145,29 @@ if defined?(Mongoid)
         expect(Mongo::Communication.tenant_scope(:listing, :portal).selector).to eq(Mongo::Communication.where(nil).selector)
       end
     end
+
+    if ::Mongoid::VERSION.start_with?("3.1.")
+      describe "getter method override" do
+        before(:each) { Mongo::Portal.current = camyp }
+
+        it "returns the current portal_id" do
+          expect(Mongo::Listing.new.portal_id).to eq(camyp.id)
+        end
+
+        it "#portal_id returns nil" do
+          Mongo::Portal.current = nil
+
+          expect(Mongo::Listing.new.portal_id).to eq(nil)
+        end
+
+        it "returns its value for existing" do
+          listing = Mongo::Listing.create(name: "abcdef")
+          expect(listing.portal_id).to eq(camyp.id)
+
+          Mongo::Portal.current = nil
+          expect(listing.portal_id).to eq(camyp.id)
+        end
+      end
+    end
   end
 end
