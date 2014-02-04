@@ -124,6 +124,12 @@ if defined?(ActiveRecord)
 
         expect(Communication.tenant_scope(:listing, :portal).to_sql).to eq(Communication.where(nil).to_sql)
       end
+
+      it "scopes nothing" do
+        Listing.current = listing
+
+        expect(Communication.tenant_scope(nil).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't'})
+      end
     end
   end
 end

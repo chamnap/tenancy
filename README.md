@@ -20,7 +20,7 @@ $ bundle
 
 ## Usage
 
-This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`.
+This gem provides two modules: `Tenancy::Resource` and `Tenancy::ResourceScope`. Include them into your activerecord/mongoid models.
 
 ### Tenancy::Resource
 
@@ -81,19 +81,19 @@ class ExtraCommunication < ActiveRecord::Base
 end
 
 > Portal.current = 1
-> Listing.find(1).to_sql
+> Listing.find(1)
 # => SELECT "listings".* FROM "listings" WHERE "portal_id" = 1 AND "id" = 1
 
 > Listing.current = 1
-> Communication.find(1).to_sql
+> Communication.find(1)
 # => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "listing_id" = 1 AND "is_active" = true AND "id" = 1
 
-# unscoped :current_portal, :current_listing
-> Communication.without_scope(:portal).find(1)
-# => SELECT "communications".* FROM "communications" WHERE "listing_id" = 1 AND "is_active" = true AND "id" = 1
-> Communication.without_scope(:listing).find(1)
+# include/exclude tenant_scope :current_portal, :current_listing
+> Communication.tenant_scope(:portal).find(1)
 # => SELECT "communications".* FROM "communications" WHERE "portal_id" = 1 AND "is_active" = true AND "id" = 1
-> Communication.without_scope(:portal, :listing).find(1)
+> Communication.tenant_scope(:listing).find(1)
+# => SELECT "communications".* FROM "communications" WHERE "listing_id" = 1 AND "is_active" = true AND "id" = 1
+> Communication.tenant_scope(nil).find(1)
 # => SELECT "communications".* FROM "communications" WHERE "is_active" = true AND "id" = 1
 ```
 

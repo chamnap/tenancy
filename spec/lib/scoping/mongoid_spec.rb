@@ -144,6 +144,12 @@ if defined?(Mongoid)
 
         expect(Mongo::Communication.tenant_scope(:listing, :portal).selector).to eq(Mongo::Communication.where(nil).selector)
       end
+
+      it "scopes nothing" do
+        Mongo::Listing.current = listing
+
+        expect(Mongo::Communication.tenant_scope(nil).selector).to eq({"is_active"=>true})
+      end
     end
 
     if ::Mongoid::VERSION.start_with?("3.1.")
