@@ -2,7 +2,7 @@
 
 **Tenancy** is a simple gem that provides multi-tenancy support on activerecord/mongoid (3/4) through scoping. I suggest you to watch an excellent [RailsCast on Multitenancy with Scopes](http://railscasts.com/episodes/388-multitenancy-with-scopes) and read this book [Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails).
 
-This `README.md` file is for the latest version, v1.0.0. For the previous version, check out this [README.md](https://github.com/yoolk/tenancy/blob/v0.2.0/README.md).
+This `README.md` file is for the latest version, v1.0.0. For the previous version, check out this [README.md](https://github.com/yoolk/tenancy/blob/v0.2.0/README.md). Please, see the [CHANGELOG.md](https://github.com/yoolk/tenancy/blob/master/CHANGELOG.md#100) to do an upgrade.
 
 ## Installation
 
@@ -158,6 +158,13 @@ end
 describe Listing do
   it { should have_scope_to(:portal) }
   it { should have_scope_to(:portal).class_name('Portal') }
+end
+```
+
+```ruby
+describe Mongo::Listing do
+  it { should have_scope_to(:portal) }
+  it { should have_scope_to(:portal).of_type(Mongo::Portal) }
 end
 ```
 
