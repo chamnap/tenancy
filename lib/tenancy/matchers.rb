@@ -17,18 +17,22 @@ module Tenancy
 
         def initialize(scope_name)
           @scope_name             = scope_name
-          @ar_presence_matcher    = ::Shoulda::Matchers::ActiveModel::ValidatePresenceOfMatcher.new(@scope_name)
-          @ar_belong_to_matcher   = ::Shoulda::Matchers::ActiveRecord::AssociationMatcher.new(:belongs_to, @scope_name)
-          @mid_presence_matcher   = ::Mongoid::Matchers::Validations::HaveValidationMatcher.new(@scope_name, :presence)
-          @mid_belong_to_matcher  = ::Mongoid::Matchers::Associations::HaveAssociationMatcher.new(@scope_name, ::Mongoid::Matchers::Associations::BELONGS_TO)
+          if defined?(ActiveRecord)
+            @ar_presence_matcher    = ::Shoulda::Matchers::ActiveModel::ValidatePresenceOfMatcher.new(@scope_name)
+            @ar_belong_to_matcher   = ::Shoulda::Matchers::ActiveRecord::AssociationMatcher.new(:belongs_to, @scope_name)
+          end
+          if defined?(Mongoid)
+            @mid_presence_matcher   = ::Mongoid::Matchers::Validations::HaveValidationMatcher.new(@scope_name, :presence)
+            @mid_belong_to_matcher  = ::Mongoid::Matchers::Associations::HaveAssociationMatcher.new(@scope_name, ::Mongoid::Matchers::Associations::BELONGS_TO)
+          end
         end
 
         def matches?(subject)
-          if subject.class <= ::ActiveRecord::Base
+          if defined?(ActiveRecord) && subject.class <= ::ActiveRecord::Base
             @ar_presence_matcher.matches?(subject) &&
             @ar_belong_to_matcher.matches?(subject) &&
             ar_default_scope_matches?(subject)
-          elsif subject.class <= ::Mongoid::Document
+          elsif defined?(Mongoid) && subject.class <= ::Mongoid::Document
             @mid_presence_matcher.matches?(subject) &&
             @mid_belong_to_matcher.matches?(subject)
           end
@@ -59,9 +63,9 @@ module Tenancy
           end
 
           def method_missing(method, *args, &block)
-            if @ar_belong_to_matcher.respond_to?(method)
+            if @ar_belong_to_matcher && @ar_belong_to_matcher.respond_to?(method)
               @ar_belong_to_matcher.send(method, *args, &block)
-            elsif @mid_belong_to_matcher.respond_to?(method)
+            elsif @mid_belong_to_matcher && @mid_belong_to_matcher.respond_to?(method)
               @mid_belong_to_matcher.send(method, *args, &block)
             else
               super

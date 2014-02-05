@@ -97,7 +97,7 @@ end
 # => SELECT "communications".* FROM "communications" WHERE "is_active" = true AND "id" = 1
 ```
 
-`scope_to :portal` does 4 things:
+`scope_to :portal` does these things:
 
 1. it adds `belongs_to :portal`.
 
