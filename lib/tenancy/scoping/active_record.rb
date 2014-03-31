@@ -27,7 +27,7 @@ module Tenancy
     end
 
     def tenant_scope(tenant_names)
-      scope = klass.where(nil).with_default_scope
+      scope = default_scoped
       tenants.each do |tenant|
         next if tenant_names.include?(tenant.name.to_sym)
 
@@ -36,6 +36,14 @@ module Tenancy
       end
 
       scope
+    end
+
+    def default_scoped
+      if ::ActiveRecord::VERSION::MAJOR >= 4 && ::ActiveRecord::VERSION::MINOR >= 1
+        klass.where(nil).default_scoped
+      else
+        klass.where(nil).with_default_scope
+      end
     end
 
     def validates_uniqueness_in_scope(fields, args={})

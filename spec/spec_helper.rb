@@ -16,6 +16,7 @@ require "pry"
 require "database_cleaner"
 require "logger"
 require "tenancy"
+require 'minitest/autorun'
 
 # active_record
 if Gem.loaded_specs["activerecord"]
