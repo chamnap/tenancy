@@ -16,7 +16,11 @@ if defined?(ActiveRecord)
       it "have default_scope with :portal_id field" do
         Portal.current = camyp
 
-        expect(Listing.where(nil).to_sql).to eq(Listing.where(portal_id: Portal.current_id).to_sql)
+        if ::ActiveRecord::VERSION::MAJOR == 4 && ::ActiveRecord::VERSION::MINOR >= 1
+          expect(Listing.where(nil).to_sql).to eq(Listing.rewhere(portal_id: Portal.current_id).to_sql)
+        else
+          expect(Listing.where(nil).to_sql).to eq(Listing.where(portal_id: Portal.current_id).to_sql)
+        end
       end
 
       it "doesn't have default_scope when it doesn't have current portal" do
@@ -41,7 +45,11 @@ if defined?(ActiveRecord)
         Portal.current  = camyp
         Listing.current = listing
 
-        Communication.where(nil).to_sql.should == Communication.where(portal_id: Portal.current_id, listing_id: Listing.current_id).to_sql
+        if ::ActiveRecord::VERSION::MAJOR == 4 && ::ActiveRecord::VERSION::MINOR >= 1
+          expect(Communication.where(nil).to_sql).to eq(Communication.rewhere(portal_id: Portal.current_id, listing_id: Listing.current_id).to_sql)
+        else
+          expect(Communication.where(nil).to_sql).to eq(Communication.where(portal_id: Portal.current_id, listing_id: Listing.current_id).to_sql)
+        end
       end
 
       it "doesn't have default_scope when it doesn't have current portal and listing" do
@@ -109,14 +117,14 @@ if defined?(ActiveRecord)
         Listing.current = listing
 
         expect(Communication.tenant_scope(:portal).to_sql).not_to include(%{"communications"."listing_id" = #{Listing.current_id}})
-        expect(Communication.tenant_scope(:portal).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."portal_id" = #{Portal.current_id}})
+        expect(Communication.tenant_scope(:portal).to_sql.squeeze(' ')).to eq(%{SELECT "communications".* FROM "communications" WHERE "communications"."is_active" = 't' AND "communications"."portal_id" = #{Portal.current_id}})
       end
 
       it "scopes only :current_listing" do
         Listing.current = listing
 
         expect(Communication.tenant_scope(:listing).to_sql).not_to include(%{"communications"."portal_id" = #{Portal.current_id}})
-        expect(Communication.tenant_scope(:listing).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't' AND "communications"."listing_id" = #{Listing.current_id}})
+        expect(Communication.tenant_scope(:listing).to_sql.squeeze(' ')).to eq(%{SELECT "communications".* FROM "communications" WHERE "communications"."is_active" = 't' AND "communications"."listing_id" = #{Listing.current_id}})
       end
 
       it "scopes only :current_listing and :current_portal" do
@@ -128,7 +136,7 @@ if defined?(ActiveRecord)
       it "scopes nothing" do
         Listing.current = listing
 
-        expect(Communication.tenant_scope(nil).to_sql).to eq(%{SELECT "communications".* FROM "communications"  WHERE "communications"."is_active" = 't'})
+        expect(Communication.tenant_scope(nil).to_sql.squeeze(' ')).to eq(%{SELECT "communications".* FROM "communications" WHERE "communications"."is_active" = 't'})
       end
     end
   end

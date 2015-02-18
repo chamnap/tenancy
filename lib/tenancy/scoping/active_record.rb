@@ -27,19 +27,28 @@ module Tenancy
     end
 
     def tenant_scope(tenant_names)
-      scope = default_scoped
-      tenants.each do |tenant|
-        next if tenant_names.include?(tenant.name.to_sym)
+      if ::ActiveRecord::VERSION::MAJOR == 4 &&  ::ActiveRecord::VERSION::MINOR >= 1
+        foreign_keys = if tenant_names.blank?
+          tenants.map(&:foreign_key)
+        else
+          tenants.reject { |tenant| tenant_names.include?(tenant.name) }.map(&:foreign_key)
+        end
+        klass.unscope(where: foreign_keys)
+      else
+        scope = default_scoped
+        tenants.each do |tenant|
+          next if tenant_names.include?(tenant.name.to_sym)
 
-        tenant_scope_sql = klass.where(nil).table[tenant.foreign_key].eq(tenant.klass.current_id).to_sql
-        scope.where_values.delete_if { |query| query.to_sql == tenant_scope_sql }
+          tenant_scope_sql = klass.where(nil).table[tenant.foreign_key].eq(tenant.klass.current_id).to_sql
+          scope.where_values.delete_if { |query| query.to_sql == tenant_scope_sql }
+        end
+
+        scope
       end
-
-      scope
     end
 
     def default_scoped
-      if ::ActiveRecord::VERSION::MAJOR >= 4 && ::ActiveRecord::VERSION::MINOR >= 1
+      if ::ActiveRecord::VERSION::MAJOR == 4 && ::ActiveRecord::VERSION::MINOR >= 1
         klass.where(nil).default_scoped
       else
         klass.where(nil).with_default_scope

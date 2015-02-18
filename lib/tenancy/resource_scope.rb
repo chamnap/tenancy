@@ -9,7 +9,7 @@ module Tenancy
       end
 
       def tenant_scope(*resources)
-        tenancy_scoping.tenant_scope(resources)
+        tenancy_scoping.tenant_scope(resources.compact)
       end
 
       def validates_uniqueness_in_scope(fields, args={})

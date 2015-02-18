@@ -9,39 +9,39 @@ if defined?(ActiveRecord)
     it "set current with instance" do
       Portal.current = camyp
 
-      Portal.current.should == camyp
-      RequestStore.store[:"Portal.current"].should == camyp
+      expect(Portal.current).to eq(camyp)
+      expect(RequestStore.store[:"Portal.current"]).to eq(camyp)
     end
 
     it "set current with id" do
       Portal.current = panpage.id
 
-      Portal.current.should == panpage
-      RequestStore.store[:"Portal.current"].should == panpage
+      expect(Portal.current).to eq(panpage)
+      expect(RequestStore.store[:"Portal.current"]).to eq(panpage)
     end
 
     it "set current with nil" do
       Portal.current = panpage
       Portal.current = nil
 
-      Portal.current.should == nil
-      RequestStore.store[:"Portal.current"].should == nil
+      expect(Portal.current).to eq(nil)
+      expect(RequestStore.store[:"Portal.current"]).to eq(nil)
     end
 
     it "#current_id" do
       Portal.current = yoolk
 
-      Portal.current_id.should == yoolk.id
+      expect(Portal.current_id).to eq(yoolk.id)
     end
 
     it "#with_scope with block" do
-      Portal.current.should == nil
+      expect(Portal.current).to eq(nil)
 
       Portal.with_tenant(yoolk) do
-        Portal.current.should == yoolk
+        expect(Portal.current).to eq(yoolk)
       end
 
-      Portal.current.should == nil
+      expect(Portal.current).to eq(nil)
     end
 
     it "#with_scope without block" do
@@ -59,39 +59,39 @@ if defined?(Mongoid)
     it "set current with instance" do
       Mongo::Portal.current = camyp
 
-      Mongo::Portal.current.should == camyp
-      RequestStore.store[:"Mongo::Portal.current"].should == camyp
+      expect(Mongo::Portal.current).to eq(camyp)
+      expect(RequestStore.store[:"Mongo::Portal.current"]).to eq(camyp)
     end
 
     it "set current with id" do
       Mongo::Portal.current = panpage.id
 
-      Mongo::Portal.current.should == panpage
-      RequestStore.store[:"Mongo::Portal.current"].should == panpage
+      expect(Mongo::Portal.current).to eq(panpage)
+      expect(RequestStore.store[:"Mongo::Portal.current"]).to eq(panpage)
     end
 
     it "set current with nil" do
       Mongo::Portal.current = panpage
       Mongo::Portal.current = nil
 
-      Mongo::Portal.current.should == nil
-      RequestStore.store[:"Mongo::Portal.current"].should == nil
+      expect(Mongo::Portal.current).to eq(nil)
+      expect(RequestStore.store[:"Mongo::Portal.current"]).to eq(nil)
     end
 
     it "#current_id" do
       Mongo::Portal.current = yoolk
 
-      Mongo::Portal.current_id.should == yoolk.id
+      expect(Mongo::Portal.current_id).to eq(yoolk.id)
     end
 
     it "#with_scope with block" do
-      Mongo::Portal.current.should == nil
+      expect(Mongo::Portal.current).to eq(nil)
 
       Mongo::Portal.with_tenant(yoolk) do
-        Mongo::Portal.current.should == yoolk
+        expect(Mongo::Portal.current).to eq(yoolk)
       end
 
-      Mongo::Portal.current.should == nil
+      expect(Mongo::Portal.current).to eq(nil)
     end
 
     it "#with_scope without block" do
